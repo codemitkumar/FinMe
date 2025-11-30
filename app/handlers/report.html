@@ -1,0 +1,208 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Monthly Finance Report</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 24px;
+        background: #f4f6f8;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 28px;
+        color: #333;
+        letter-spacing: 0.5px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+        color: #888;
+        margin-top: 4px;
+      }
+
+      .card {
+        background: white;
+        padding: 18px 22px;
+        border-radius: 12px;
+        margin-top: 16px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+
+      .section-title {
+        font-size: 20px;
+        margin-bottom: 12px;
+        color: #444;
+        font-weight: bold;
+      }
+
+      .summary-grid {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+
+      .summary-item {
+        width: 32%;
+        background: #f8f9fb;
+        border-radius: 10px;
+        padding: 14px;
+        text-align: center;
+      }
+
+      .summary-item h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #222;
+      }
+
+      .summary-item p {
+        margin-top: 8px;
+        font-size: 16px;
+        color: #666;
+      }
+
+      .chart-img {
+        width: 100%;
+        border-radius: 12px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+
+      table th {
+        background: #222;
+        color: white;
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 12px;
+        color: #999;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div class="header">
+      <img class="logo" src="data:image/png;base64,APP_LOGO_BASE64" />
+      <h1>Monthly Finance Report</h1>
+      <div class="subtitle">Prepared for: Sanjay Kumar</div>
+      <div class="subtitle">Month: January 2025</div>
+    </div>
+
+    <!-- SUMMARY SECTION -->
+    <div class="card">
+      <div class="section-title">Summary Overview</div>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <h3>Total Budget</h3>
+          <p>₹ 200,000</p>
+        </div>
+
+        <div class="summary-item">
+          <h3>Total Expenses</h3>
+          <p>₹ 54,200</p>
+        </div>
+
+        <div class="summary-item">
+          <h3>Savings</h3>
+          <p>₹ 145,800</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY SPEND PIE CHART -->
+    <div class="card">
+      <div class="section-title">Spending Breakdown</div>
+      <img
+        class="chart-img"
+        src="data:image/png;base64,SPENDING_CHART_BASE64"
+      />
+    </div>
+
+    <!-- NEEDS VS WANTS -->
+    <div class="card">
+      <div class="section-title">Needs vs Wants</div>
+      <img
+        class="chart-img"
+        src="data:image/png;base64,NEEDS_WANTS_CHART_BASE64"
+      />
+    </div>
+
+    <!-- DETAILED EXPENSE TABLE -->
+    <div class="card">
+      <div class="section-title">Detailed Expenses</div>
+
+      <table>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Amount</th>
+          <th>Date</th>
+        </tr>
+
+        <tr>
+          <td>Groceries</td>
+          <td>NEEDS</td>
+          <td>₹ 4500</td>
+          <td>2025-01-05</td>
+        </tr>
+
+        <tr>
+          <td>New Shoes</td>
+          <td>WANTS</td>
+          <td>₹ 3200</td>
+          <td>2025-01-08</td>
+        </tr>
+
+        <tr>
+          <td>Electricity Bill</td>
+          <td>NEEDS</td>
+          <td>₹ 1400</td>
+          <td>2025-01-10</td>
+        </tr>
+
+        <tr>
+          <td>Movie Night</td>
+          <td>WANTS</td>
+          <td>₹ 600</td>
+          <td>2025-01-12</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">Generated using BudgetSense App • © 2025</div>
+  </body>
+</html>
