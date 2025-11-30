@@ -23,11 +23,8 @@ export default function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
-        // Keep splash visible
         await SplashScreen.preventAutoHideAsync();
-
-        // Simulate loading resources (fonts, assets, API calls)
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
       } catch (e) {
         console.warn(e);
       } finally {

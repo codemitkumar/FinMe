@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "BudgetSense",
-    "slug": "BudgetSense",
+    "slug": "budgetsense",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -45,6 +45,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2a897a38-ae3b-4c9d-a488-585fd4f58245"
+      }
+    },
+    "owner": "author_sanju"
   }
 }
