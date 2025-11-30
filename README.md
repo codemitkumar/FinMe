@@ -1,50 +1,179 @@
-# Welcome to your Expo app 👋
+# BudgetSense
+A simple, offline, privacy-friendly budgeting app — perfect for students.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+BudgetSense is an open-source personal finance app designed especially for students who want to control their daily spending without subscriptions, ads, or distractions.
 
-## Get started
+Track your expenses, divide them into Needs vs Wants, analyze where your money goes, and generate clean monthly reports — all completely offline and stored only on your device.
 
-1. Install dependencies
+No accounts. No cloud. No ads.
+Just pure budgeting, made simple.
 
-   ```bash
-   npm install
-   ```
+## 🚀 Features
+### 📝 Add & Track Expenses
 
-2. Start the app
+- Add any spending with title, amount, and date
 
-   ```bash
-   npx expo start
-   ```
+- Categorize each entry as Need or Want
 
-In the output, you'll find options to open the app in a
+- Helps you visually understand spending habits
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 📦 Shopping List Mode
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Maintain a list of items you plan to buy
 
-## Get a fresh project
+- Automatically categorize as Needs / Wants
 
-When you're ready, run:
+- Mark items as pending or purchased
+ 
+- Perfect for saving for things over time
 
-```bash
-npm run reset-project
-```
+### 📊 Visual Charts & Analytics
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- Needs vs Wants pie chart
 
-## Learn more
+- Pending shopping list chart
 
-To learn more about developing your project with Expo, look at the following resources:
+- 12-month savings chart
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- All charts auto-generated locally
 
-## Join the community
+### 📅 Monthly Reports (PDF)
 
-Join our community of developers creating universal apps.
+- Export your complete monthly finance report
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+#### Includes:
+
+- Category breakdown chart
+
+- Pending expenses chart
+
+- Savings summary
+
+- Needs & Wants tables
+
+- Yearly comparisons
+
+### 🔒 100% Local & Private
+
+- No online accounts
+
+- No cloud backup
+
+- No ads
+
+- No analytics
+
+- All your data stays within the device
+
+- Clearing cache = fresh start (unless you manually take backup)
+
+### 💾 Backup & Restore
+
+- Export all your data to a local backup file
+
+- Import the same file later to fully restore your app
+
+- Simple & secure for long-term usage
+
+### 🎯 Why BudgetSense?
+
+- You want a budgeting app without subscriptions
+
+- You want your data to stay private & offline
+
+- You want a simple interface without complicated features
+
+- You want easily readable monthly financial insights
+
+- You want control over needs vs wants spending
+
+BudgetSense is small, fast, secure, and focused only on budgeting — no distractions.
+
+## 🎯 Why BudgetSense is Perfect for Students
+
+- 🧾 Track your pocket expenses (food, travel, subscriptions, college supplies)
+
+- ✂️ Control spending using Needs vs Wants logic
+
+- 📅 Plan weekly and monthly budgets easily
+
+- 📊 Understand your financial habits with simple charts
+
+- 💸 Save more by spotting wasteful spends early
+
+- 🔒 100% offline — no sign-up, no internet needed
+
+- 🆓 Totally free, open-source, and no ads ever
+
+If you're a student trying to manage monthly allowance, part-time salary, or hostel expenses, BudgetSense gives you a clean and reliable way to stay on track.
+
+## 📱 Tech Stack
+
+- React Native (Expo)
+
+- AsyncStorage (local database)
+
+- react-native-chart-kit (charts)
+
+- react-native-view-shot (chart screenshot)
+
+- HTML report generator
+
+- Moment.js for date handling
+
+## 📦 Installation
+- Clone the repository
+`git clone https://github.com/your-username/BudgetSense.git`
+`cd BudgetSense`
+
+- Install dependencies
+`npm install`
+
+- Run the app
+`npx expo start`
+
+
+### You can test on:
+
+- Android Emulator
+
+- iOS Simulator (Mac required)
+
+- Expo Go
+
+- Physical device via QR
+
+- 🛠️ Build APK / AAB
+- For Expo (EAS):
+`eas build --platform android --profile production`
+
+
+## 📄 License
+
+This project is open-source and released under the MIT License.
+You are free to use, modify, and distribute the software.
+
+## ❤️ Contributing
+
+Contributions are welcome!
+You can help with:
+
+- UI improvements
+
+- Dark mode
+
+- Export formats
+
+- New charts
+
+- Translations
+
+- Just open an issue or create a pull request.
+
+## ⭐ Support
+
+If you found BudgetSense useful, consider giving it a star ⭐ on GitHub — it helps others discover the project!
+
+Make sure the project is linked with:
+
+`eas init`
