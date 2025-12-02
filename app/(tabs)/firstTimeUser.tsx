@@ -55,7 +55,7 @@ const FirstTimeSetup = () => {
             };
 
             await AsyncStorage.setItem("appData", JSON.stringify(appData));
-            router.replace("/profile");
+            router.replace("/");
           },
         },
       ]
