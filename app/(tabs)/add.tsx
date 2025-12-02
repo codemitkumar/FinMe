@@ -166,14 +166,22 @@ const AddScreen = () => {
   const [titleInput, setTitleInput] = useState("");
   const [amountInput, setAmountInput] = useState("");
   const [category, setCategory] = useState<"Needs" | "Wants">("Needs");
-
-  // Load data from AsyncStorage
   const loadData = async () => {
     try {
-      const needsData = await AsyncStorage.getItem("needs");
-      const wantsData = await AsyncStorage.getItem("wants");
-      if (needsData) setNeeds(JSON.parse(needsData));
-      if (wantsData) setWants(JSON.parse(wantsData));
+      const appData = await AsyncStorage.getItem("appData");
+      if (appData) {
+        const parsedData = JSON.parse(appData);
+        setNeeds(
+          parsedData.shoppingList.filter(
+            (item: any) => item.category === "Needs"
+          )
+        );
+        setWants(
+          parsedData.shoppingList.filter(
+            (item: any) => item.category === "Wants"
+          )
+        );
+      }
     } catch (e) {
       console.log("Error loading data:", e);
     }
@@ -183,41 +191,31 @@ const AddScreen = () => {
     loadData();
   }, []);
 
-  // Save data to AsyncStorage
-  const saveData = async (type: "needs" | "wants", data: any[]) => {
-    try {
-      await AsyncStorage.setItem(type, JSON.stringify(data));
-    } catch (e) {
-      console.log("Error saving data:", e);
+  const toggleCheck = async (type: "needs" | "wants", id: string) => {
+    const appData = await AsyncStorage.getItem("appData");
+    const parsedData = JSON.parse(appData);
+    const item = parsedData.shoppingList.find((item: any) => item.id === id);
+    if (!item) return;
+    if (!item.completed) {
+      parsedData.expenses.push({ ...item, completed: true });
+      parsedData.shoppingList = parsedData.shoppingList.filter(
+        (item: any) => item.id !== id
+      );
+      await AsyncStorage.setItem("appData", JSON.stringify(parsedData));
+      loadData();
+      return;
     }
   };
 
-  const toggleCheck = (type: "needs" | "wants", id: string) => {
-    if (type === "needs") {
-      const updated = needs.map((item) =>
-        item.id === id ? { ...item, completed: !item.completed } : item
-      );
-      setNeeds(updated);
-      saveData("needs", updated);
-    } else {
-      const updated = wants.map((item) =>
-        item.id === id ? { ...item, completed: !item.completed } : item
-      );
-      setWants(updated);
-      saveData("wants", updated);
-    }
-  };
-
-  const deleteItem = (type: "needs" | "wants", id: string) => {
-    if (type === "needs") {
-      const updated = needs.filter((item) => item.id !== id);
-      setNeeds(updated);
-      saveData("needs", updated);
-    } else {
-      const updated = wants.filter((item) => item.id !== id);
-      setWants(updated);
-      saveData("wants", updated);
-    }
+  const deleteItem = async (type: "needs" | "wants", id: string) => {
+    const appData = await AsyncStorage.getItem("appData");
+    const parsedData = JSON.parse(appData);
+    parsedData.shoppingList = parsedData.shoppingList.filter(
+      (item: any) => item.id !== id
+    );
+    AsyncStorage.setItem("appData", JSON.stringify(parsedData));
+    loadData();
+    return;
   };
 
   const handleAdd = async () => {
@@ -244,24 +242,21 @@ const AddScreen = () => {
       category,
       completed: mode === "expense",
     };
-
-    if (category === "Needs") {
-      const updated = [...needs, newItem];
-      setNeeds(updated);
-      await saveData("needs", updated);
-    } else {
-      const updated = [...wants, newItem];
-      setWants(updated);
-      await saveData("wants", updated);
+    const appData = await AsyncStorage.getItem("appData");
+    let parsedData = JSON.parse(appData);
+    if (!parsedData) {
+      parsedData = { shoppingList: [], expenses: [] };
     }
-
-    // reset form
+    if (mode === "expense") {
+      parsedData.expenses.push(newItem);
+    } else {
+      parsedData.shoppingList.push(newItem);
+    }
+    await AsyncStorage.setItem("appData", JSON.stringify(parsedData));
     setTitleInput("");
     setAmountInput("");
     setCategory("Needs");
     setMode("none");
-
-    // Reload data
     loadData();
   };
 

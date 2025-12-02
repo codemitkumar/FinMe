@@ -1,4 +1,13 @@
-export const importBackup = async () => {
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
+import { Alert } from "react-native";
+
+export const importBackup = async (setAppData,
+      setCurrency,
+      setMonthlyBudget,
+      setLastBackup
+) => {
       try {
             const result = await DocumentPicker.getDocumentAsync({
                   type: "application/json",
@@ -41,7 +50,9 @@ export const importBackup = async () => {
       }
 };
 
-export   const backupData = async () => {
+export const backupData = async (appData,
+      setLastBackup
+) => {
     try {
       if (!appData) return Alert.alert("No data to backup");
 

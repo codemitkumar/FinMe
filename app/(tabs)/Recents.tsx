@@ -32,9 +32,13 @@ const Recents = ({ page = "" }) => {
   // Load expenses from storage
   const loadExpenses = async () => {
     try {
-      const stored = await AsyncStorage.getItem("expenses");
-      const parsed = stored ? JSON.parse(stored) : [];
-      setAllExpenses(parsed);
+      const appData = await AsyncStorage.getItem("appData");
+      if (appData) {
+        const parsedData = JSON.parse(appData);
+        setAllExpenses(parsedData.expenses || []);
+        return;
+      }
+      setAllExpenses([]);
     } catch (err) {
       console.log("Error loading expenses:", err);
     }

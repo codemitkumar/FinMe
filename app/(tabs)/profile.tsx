@@ -229,10 +229,23 @@ const Profile = () => {
             <Text style={styles.btnText}>Edit Budget</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.btn} onPress={backupData}>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => backupData(appData, setLastBackup)}
+          >
             <Text style={styles.btnText}>Backup Data</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btn} onPress={importBackup}>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() =>
+              importBackup(
+                setAppData,
+                setCurrency,
+                setMonthlyBudget,
+                setLastBackup
+              )
+            }
+          >
             <Text style={styles.btnText}>Import From Backup</Text>
           </TouchableOpacity>
 
