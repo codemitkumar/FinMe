@@ -28,7 +28,7 @@
     },
     "splash": {
       "image": "./assets/images/splash.jpg",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#000000"
     },
     "plugins": [
@@ -38,6 +38,7 @@
         {
           "image": "./assets/images/splash.jpg",
           "resizeMode": "cover",
+          "backgroundColor": "#000000"
         }
       ]
     ],
