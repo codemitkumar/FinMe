@@ -71,7 +71,6 @@ const Profile = () => {
       const monthlySavings: (number | "TBD")[] = Array.from(
         { length: 12 },
         (_, i) => {
-          // Filter expenses for this month and year
           const monthExpenses =
             appData.expenses?.filter((e: any) => {
               const d = new Date(e.date);
@@ -79,7 +78,6 @@ const Profile = () => {
             }) || [];
 
           if (monthExpenses.length === 0) {
-            // Only calculate for past months or current month
             return i <= currentMonth ? appData.monthlyBudget || 0 : "TBD";
           }
 
@@ -91,15 +89,11 @@ const Profile = () => {
         }
       );
 
-      // Yearly savings = sum of actual months with data
       const thisYearSavings = monthlySavings
         .filter((s) => typeof s === "number")
         .reduce((sum, s) => sum + (s as number), 0);
 
-      // Last year savings can be calculated similarly if needed
-      const lastYearSavings = 0; // or pull from previous year if available
-
-      // Category spend breakdown
+      const lastYearSavings = 0;
       const categorySpend = { Needs: 0, Wants: 0 };
       appData.expenses?.forEach((e: any) => {
         if (new Date(e.date).getFullYear() === currentYear) {
@@ -108,9 +102,8 @@ const Profile = () => {
         }
       });
 
-      const pending = { Needs: 0, Wants: 0 }; // optional
+      const pending = { Needs: 0, Wants: 0 };
 
-      // Load saved chart PNGs from AsyncStorage
       const chartsStr = await AsyncStorage.getItem("chartPNGs");
       const charts = chartsStr ? JSON.parse(chartsStr) : {};
 
@@ -137,7 +130,7 @@ const Profile = () => {
           "Dec",
         ][currentMonth],
         year: currentYear,
-        appLogoBase64: "", // optional
+        appLogoBase64: "",
         categoryChartBase64: charts.spentChartBase64 || "",
         pendingChartBase64: charts.pendingChartBase64 || "",
         savingsChartBase64: charts.savingsChartBase64 || "",

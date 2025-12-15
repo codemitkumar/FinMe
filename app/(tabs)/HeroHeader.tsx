@@ -19,13 +19,17 @@ const HeroHeader = () => {
     console.log("Loaded app data:", data);
     const parsed = JSON.parse(data);
 
-    const currentMonth = moment().month(); // 0-11
+    const currentMonth = moment().month(); 
     const currentYear = moment().year();
 
-    // Filter expenses of THIS MONTH only
     const monthlyExpenses = parsed.expenses.filter((exp) => {
       const date = moment(exp.date);
-      return date.month() === currentMonth && date.year() === currentYear;
+
+      return (
+        date.month() === currentMonth &&
+        date.year() === currentYear &&
+        !exp.reimbursed 
+      );
     });
 
     console.log(monthlyExpenses);
@@ -36,7 +40,7 @@ const HeroHeader = () => {
 
     setUserName(parsed.userName);
     setBudget(Number(parsed.monthlyBudget));
-    setCurrency(parsed.currency.split(" ")[0]); // get ₹ or $ etc.
+    setCurrency(parsed.currency.split(" ")[0]);
     setSpent(totalSpent);
   };
 

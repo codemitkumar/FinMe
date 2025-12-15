@@ -1,4 +1,3 @@
-// AppContext.tsx
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -33,7 +32,7 @@ interface AppContextType {
 }
 
 const defaultData: AppData = {
-  userName: "",
+  userName: "Sanjay",
   monthlyBudget: 0,
   currency: "$",
   shoppingList: [],

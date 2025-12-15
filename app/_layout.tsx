@@ -4,9 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -18,28 +16,6 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [appIsReady, setAppIsReady] = useState(false);
-
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await SplashScreen.preventAutoHideAsync();
-        await new Promise((resolve) => setTimeout(resolve, 500));
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppIsReady(true);
-        await SplashScreen.hideAsync(); // hide splash when ready
-      }
-    }
-
-    prepare();
-  }, []);
-
-  // If app is not ready, render nothing; splash screen remains
-  if (!appIsReady) {
-    return null;
-  }
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

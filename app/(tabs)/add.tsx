@@ -6,6 +6,7 @@ import {
   Dimensions,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -16,7 +17,6 @@ import BottomNav from "./bottomNav";
 
 const screenWidth = Dimensions.get("window").width;
 
-// ---------------- AddForm Component ----------------
 const AddForm = ({
   titleInput,
   setTitleInput,
@@ -27,6 +27,8 @@ const AddForm = ({
   handleAdd,
   setMode,
   mode,
+  reimbursable, 
+  setReimbursable,
 }: any) => {
   return (
     <View style={styles.formContainer}>
@@ -83,12 +85,32 @@ const AddForm = ({
         </TouchableOpacity>
       </View>
 
+      {/* ⭐ Reimbursable Toggle (Expense only) */}
+      {mode === "expense" && (
+        <View style={styles.reimbursableRow}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Ionicons name="briefcase-outline" size={18} color="#1C2826" />
+            <Text style={styles.reimbursableText}>Reimbursable</Text>
+          </View>
+          <Switch
+            value={reimbursable}
+            onValueChange={setReimbursable}
+            thumbColor={reimbursable ? "#1C2826" : "#f4f3f4"}
+            trackColor={{ false: "#ccc", true: "#9AC1A6" }}
+          />
+        </View>
+      )}
+
       <TouchableOpacity style={styles.saveButton} onPress={handleAdd}>
         <Text style={{ color: "#fff", fontWeight: "600" }}>Save</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.cancelButton}
-        onPress={() => setMode("none")}
+        onPress={() => {
+          setReimbursable(false); 
+          setMode("none");
+        }}
       >
         <Text style={{ color: "#333" }}>Cancel</Text>
       </TouchableOpacity>
@@ -96,7 +118,6 @@ const AddForm = ({
   );
 };
 
-// ---------------- ListCard Component ----------------
 const ListCard = ({ title, items, bgColor, toggleCheck, deleteItem }: any) => {
   const total = items.reduce((acc: number, item: any) => acc + item.amount, 0);
 
@@ -105,6 +126,7 @@ const ListCard = ({ title, items, bgColor, toggleCheck, deleteItem }: any) => {
       <Text style={styles.cardTitle}>
         {title} ({items.length} items)
       </Text>
+
       {items.map((item: any) => (
         <View key={item.id} style={styles.listItem}>
           <TouchableOpacity
@@ -130,17 +152,7 @@ const ListCard = ({ title, items, bgColor, toggleCheck, deleteItem }: any) => {
             </Text>
           </TouchableOpacity>
 
-          <Text
-            style={[
-              styles.itemPrice,
-              item.completed && {
-                textDecorationLine: "line-through",
-                opacity: 0.6,
-              },
-            ]}
-          >
-            ${item.amount.toFixed(2)}
-          </Text>
+          <Text style={styles.itemPrice}>${item.amount.toFixed(2)}</Text>
 
           {!item.completed && (
             <TouchableOpacity
@@ -152,12 +164,12 @@ const ListCard = ({ title, items, bgColor, toggleCheck, deleteItem }: any) => {
           )}
         </View>
       ))}
+
       <Text style={styles.totalText}>Estimated Total: ${total.toFixed(2)}</Text>
     </View>
   );
 };
 
-// ---------------- Main AddScreen Component ----------------
 const AddScreen = () => {
   const [mode, setMode] = useState<"none" | "expense" | "list">("none");
   const [needs, setNeeds] = useState<any[]>([]);
@@ -166,57 +178,23 @@ const AddScreen = () => {
   const [titleInput, setTitleInput] = useState("");
   const [amountInput, setAmountInput] = useState("");
   const [category, setCategory] = useState<"Needs" | "Wants">("Needs");
+  const [reimbursable, setReimbursable] = useState(false);
+
   const loadData = async () => {
-    try {
-      const appData = await AsyncStorage.getItem("appData");
-      if (appData) {
-        const parsedData = JSON.parse(appData);
-        setNeeds(
-          parsedData.shoppingList.filter(
-            (item: any) => item.category === "Needs"
-          )
-        );
-        setWants(
-          parsedData.shoppingList.filter(
-            (item: any) => item.category === "Wants"
-          )
-        );
-      }
-    } catch (e) {
-      console.log("Error loading data:", e);
-    }
+    const appData = await AsyncStorage.getItem("appData");
+    if (!appData) return;
+    const parsedData = JSON.parse(appData);
+    setNeeds(
+      parsedData.shoppingList.filter((i: any) => i.category === "Needs")
+    );
+    setWants(
+      parsedData.shoppingList.filter((i: any) => i.category === "Wants")
+    );
   };
 
   useEffect(() => {
     loadData();
   }, []);
-
-  const toggleCheck = async (type: "needs" | "wants", id: string) => {
-    const appData = await AsyncStorage.getItem("appData");
-    const parsedData = JSON.parse(appData);
-    const item = parsedData.shoppingList.find((item: any) => item.id === id);
-    if (!item) return;
-    if (!item.completed) {
-      parsedData.expenses.push({ ...item, completed: true });
-      parsedData.shoppingList = parsedData.shoppingList.filter(
-        (item: any) => item.id !== id
-      );
-      await AsyncStorage.setItem("appData", JSON.stringify(parsedData));
-      loadData();
-      return;
-    }
-  };
-
-  const deleteItem = async (type: "needs" | "wants", id: string) => {
-    const appData = await AsyncStorage.getItem("appData");
-    const parsedData = JSON.parse(appData);
-    parsedData.shoppingList = parsedData.shoppingList.filter(
-      (item: any) => item.id !== id
-    );
-    AsyncStorage.setItem("appData", JSON.stringify(parsedData));
-    loadData();
-    return;
-  };
 
   const handleAdd = async () => {
     if (!titleInput || !amountInput) {
@@ -224,60 +202,44 @@ const AddScreen = () => {
       return;
     }
 
-    if (mode === "expense") {
-      Alert.alert(
-        "Warning",
-        "Adding an expense cannot be undone",
-        [{ text: "OK", onPress: () => {} }],
-        { cancelable: false }
-      );
-    }
-
-    const newId = uuid.v4() as string;
-    const newItem = {
-      id: newId,
+    const newItem: any = {
+      id: uuid.v4(),
       title: titleInput,
       amount: parseFloat(amountInput),
       date: new Date().toISOString(),
       category,
       completed: mode === "expense",
     };
+
+    if (mode === "expense" && reimbursable) {
+      newItem.reimbursable = true;
+    }
+
     const appData = await AsyncStorage.getItem("appData");
-    let parsedData = JSON.parse(appData);
-    if (!parsedData) {
-      parsedData = { shoppingList: [], expenses: [] };
-    }
-    if (mode === "expense") {
-      parsedData.expenses.push(newItem);
-    } else {
-      parsedData.shoppingList.push(newItem);
-    }
+    const parsedData = appData
+      ? JSON.parse(appData)
+      : { shoppingList: [], expenses: [] };
+
+    mode === "expense"
+      ? parsedData.expenses.push(newItem)
+      : parsedData.shoppingList.push(newItem);
+
     await AsyncStorage.setItem("appData", JSON.stringify(parsedData));
+
     setTitleInput("");
     setAmountInput("");
     setCategory("Needs");
+    setReimbursable(false);
     setMode("none");
     loadData();
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#DAEFB3" }}>
-      <ScrollView
-        style={{ flex: 1, backgroundColor: "#DAEFB3", padding: 20 }}
-        contentContainerStyle={{ paddingBottom: 40 }}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
-      >
+      <ScrollView style={{ padding: 20 }}>
         {mode === "none" ? (
           <>
-            {/* Action Buttons */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginBottom: 20,
-              }}
-            >
+            <View style={{ flexDirection: "row", marginBottom: 20 }}>
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={() => setMode("expense")}
@@ -292,24 +254,10 @@ const AddScreen = () => {
               </TouchableOpacity>
             </View>
 
-            {/* List Cards */}
-            <ListCard
-              title="Needs"
-              items={needs}
-              bgColor="#D64550"
-              toggleCheck={toggleCheck}
-              deleteItem={deleteItem}
-            />
-            <ListCard
-              title="Wants"
-              items={wants}
-              bgColor="#380036"
-              toggleCheck={toggleCheck}
-              deleteItem={deleteItem}
-            />
+            <ListCard title="Needs" items={needs} bgColor="#D64550" />
+            <ListCard title="Wants" items={wants} bgColor="#380036" />
           </>
         ) : (
-          // Show form only when mode is "expense" or "list"
           <AddForm
             titleInput={titleInput}
             setTitleInput={setTitleInput}
@@ -320,6 +268,8 @@ const AddScreen = () => {
             handleAdd={handleAdd}
             setMode={setMode}
             mode={mode}
+            reimbursable={reimbursable}
+            setReimbursable={setReimbursable}
           />
         )}
       </ScrollView>
@@ -330,7 +280,6 @@ const AddScreen = () => {
 
 export default AddScreen;
 
-// ---------------- Styles ----------------
 const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
@@ -341,24 +290,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   actionText: { color: "#fff", fontWeight: "700" },
+
   formContainer: {
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 20,
     marginBottom: 20,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
   },
   formTitle: { fontSize: 18, fontWeight: "700", marginBottom: 15 },
+
   input: {
     backgroundColor: "#f2f2f2",
     padding: 12,
     borderRadius: 12,
     marginBottom: 15,
   },
+
+  reimbursableRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#F3F6F4",
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+  reimbursableText: {
+    marginLeft: 8,
+    fontWeight: "600",
+    color: "#1C2826",
+  },
+
   saveButton: {
     backgroundColor: "#1C2826",
     paddingVertical: 12,
@@ -373,6 +335,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
+
   categoryContainer: { flexDirection: "row", marginBottom: 15 },
   categoryButton: {
     flex: 1,
@@ -384,6 +347,7 @@ const styles = StyleSheet.create({
   },
   categorySelected: { backgroundColor: "#1C2826" },
   categoryText: { color: "#000", fontWeight: "600" },
+
   card: {
     borderRadius: 16,
     padding: 16,

@@ -16,29 +16,19 @@ export const importBackup = async (setAppData,
             if (result.canceled) return;
 
             const fileUri = result.assets[0].uri;
-
-            // Read file content
             const content = await FileSystem.readAsStringAsync(fileUri, {
                   encoding: FileSystem.EncodingType.UTF8,
             });
 
             const parsed = JSON.parse(content);
-
-            // Validate backup structure
             if (!parsed) {
                   Alert.alert("Invalid Backup", "The selected file is not valid.");
                   return;
             }
-
-            // Save restored data in AsyncStorage
             await AsyncStorage.setItem("appData", JSON.stringify(parsed));
-
-            // Update states
             setAppData(parsed);
             setCurrency(parsed.currency || "₹ INR");
             setMonthlyBudget(String(parsed.monthlyBudget || "25000"));
-
-            // Mark backup time
             const time = new Date().toLocaleString();
             setLastBackup(time);
             await AsyncStorage.setItem("lastBackup", time);

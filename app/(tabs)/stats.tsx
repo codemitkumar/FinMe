@@ -13,7 +13,6 @@ const Stats = () => {
   const spentChartRef = useRef(null);
   const pendingChartRef = useRef(null);
   const savingsChartRef = useRef(null);
-  // Load data from AsyncStorage
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -85,16 +84,20 @@ const Stats = () => {
     saveChartsToStorage();
   }, [userData]);
 
-  // Current month & year
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
 
-  // Monthly expenses
   const monthlyExpenses = useMemo(() => {
     if (!userData?.expenses) return [];
+
     return userData.expenses.filter((e: any) => {
       const d = new Date(e.date);
-      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+
+      return (
+        d.getMonth() === currentMonth &&
+        d.getFullYear() === currentYear &&
+        !e.reimbursed 
+      );
     });
   }, [userData]);
 
@@ -113,24 +116,25 @@ const Stats = () => {
     return { Needs: needs, Wants: wants };
   }, [monthlyExpenses]);
 
-  // Budget from user data
   const budget = userData?.monthlyBudget || 0;
 
-  // Pending expenses (optional: you can mark some expenses as pending in data)
   const pending = { Needs: 0, Wants: 0 };
 
-  // Monthly savings (simplified as budget - spent for each month)
   const monthlySavings = Array.from({ length: 12 }, (_, i) => {
     if (!userData?.expenses) return 0;
+
     const monthlyTotal = userData.expenses
-      .filter((e: any) => new Date(e.date).getMonth() === i)
+      .filter((e: any) => {
+        const d = new Date(e.date);
+        return d.getMonth() === i && !e.reimbursed; 
+      })
       .reduce((sum: number, e: any) => sum + e.amount, 0);
+
     return (userData.monthlyBudget || 0) - monthlyTotal;
   });
 
-  // Yearly savings
   const thisYearSavings = monthlySavings.reduce((sum, s) => sum + s, 0);
-  const lastYearSavings = thisYearSavings; // Placeholder, you can compute actual last year if needed
+  const lastYearSavings = thisYearSavings;
 
   if (!userData) return <Text style={{ margin: 20 }}>Loading Stats...</Text>;
 
@@ -194,8 +198,8 @@ const Stats = () => {
               labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
               barPercentage: 0.5,
             }}
-            fromZero={true} // This ensures 0 is represented at baseline
-            showValuesOnTopOfBars={true} // Optional: show exact value on top
+            fromZero={true}
+            showValuesOnTopOfBars={true}
           />
         </View>
         <View style={styles.card} ref={pendingChartRef} collapsable={false}>

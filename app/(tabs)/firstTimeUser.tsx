@@ -25,7 +25,7 @@ const FirstTimeSetup = () => {
   const checkIfSetupDone = async () => {
     const setupDone = await AsyncStorage.getItem("appData");
     if (setupDone) {
-      router.replace("/"); // already has app data
+      router.replace("/");
     }
   };
 

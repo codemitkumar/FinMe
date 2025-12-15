@@ -28,23 +28,16 @@ const Recents = ({ page = "" }) => {
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [allExpenses, setAllExpenses] = useState([]);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [expandedId, setExpandedId] = useState(null); 
 
-  // Load expenses from storage
   const loadExpenses = async () => {
-    try {
-      const appData = await AsyncStorage.getItem("appData");
-      if (appData) {
-        const parsedData = JSON.parse(appData);
-        setAllExpenses(parsedData.expenses || []);
-        return;
-      }
-      setAllExpenses([]);
-    } catch (err) {
-      console.log("Error loading expenses:", err);
+    const appData = await AsyncStorage.getItem("appData");
+    if (appData) {
+      const parsedData = JSON.parse(appData);
+      setAllExpenses(parsedData.expenses || []);
     }
   };
 
-  // Filter based on month + year
   const filterForMonth = () => {
     const filtered = allExpenses.filter((exp) => {
       const d = new Date(exp.date);
@@ -53,168 +46,146 @@ const Recents = ({ page = "" }) => {
     setFilteredExpenses(filtered);
   };
 
-  // Load expenses once
   useEffect(() => {
     loadExpenses();
   }, []);
 
-  // Re-filter whenever month or year changes OR expenses change
   useEffect(() => {
     filterForMonth();
   }, [allExpenses, selectedMonth, selectedYear]);
 
-  const goLeft = () => {
-    setSelectedMonth((prev) => {
-      if (prev === 0) {
-        setSelectedYear((y) => y - 1);
-        return 11;
-      }
-      return prev - 1;
-    });
-  };
+  const markReimbursed = async (id) => {
+    const appData = await AsyncStorage.getItem("appData");
+    if (!appData) return;
 
-  const goRight = () => {
-    setSelectedMonth((prev) => {
-      if (prev === 11) {
-        setSelectedYear((y) => y + 1);
-        return 0;
-      }
-      return prev + 1;
-    });
+    const parsedData = JSON.parse(appData);
+    parsedData.expenses = parsedData.expenses.map((exp) =>
+      exp.id === id ? { ...exp, reimbursed: true } : exp
+    );
+
+    await AsyncStorage.setItem("appData", JSON.stringify(parsedData));
+    setExpandedId(null);
+    loadExpenses();
   };
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
-      {/* Title */}
-      <Text
-        style={{
-          fontSize: 22,
-          fontWeight: "700",
-          marginBottom: 15,
-          color: "#3A4742",
-        }}
-      >
+      <Text style={{ fontSize: 22, fontWeight: "700", marginBottom: 15 }}>
         Recents
       </Text>
 
-      {/* Month + Year Slider */}
-      {page === "list" && (
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
-          <TouchableOpacity onPress={goLeft}>
-            <Text style={{ fontSize: 22, color: "#3A4742" }}>◀</Text>
-          </TouchableOpacity>
-
-          <View
-            style={{
-              alignItems: "center",
-              flexDirection: "row",
-              gap: 6,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-                color: "#3A4742",
-              }}
-            >
-              {months[selectedMonth]}
-            </Text>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-                color: "#3A4742",
-              }}
-            >
-              {selectedYear}
-            </Text>
-          </View>
-
-          <TouchableOpacity onPress={goRight}>
-            <Text style={{ fontSize: 22, color: "#3A4742" }}>▶</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Expenses List */}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         {filteredExpenses.length === 0 && (
           <Text style={{ textAlign: "center", marginTop: 20, color: "#777" }}>
             No expenses for this month.
           </Text>
         )}
 
-        {filteredExpenses.map((expense) => (
-          <View
-            key={expense.id}
-            style={{
-              backgroundColor: "#ffffff",
-              padding: 18,
-              borderRadius: 16,
-              marginBottom: 14,
-              shadowColor: "#000",
-              shadowOpacity: 0.08,
-              shadowRadius: 6,
-              shadowOffset: { width: 0, height: 3 },
-              elevation: 3,
-            }}
-          >
-            {/* Title + Amount */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginBottom: 6,
-              }}
-            >
-              <Text style={{ fontSize: 16, fontWeight: "600" }}>
-                {expense.title}
-              </Text>
-              <Text
-                style={{ fontSize: 16, fontWeight: "700", color: "#2e7d32" }}
-              >
-                ₹{expense.amount.toFixed(2)}
-              </Text>
-            </View>
+        {filteredExpenses.map((expense) => {
+          const isExpandable = expense.reimbursable === true;
+          const isExpanded = expandedId === expense.id;
 
-            {/* Category + Date */}
-            <View
+          return (
+            <TouchableOpacity
+              key={expense.id}
+              activeOpacity={0.9}
+              onPress={() =>
+                isExpandable
+                  ? setExpandedId(isExpanded ? null : expense.id)
+                  : null
+              }
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginTop: 4,
+                backgroundColor: "#fff",
+                padding: 18,
+                borderRadius: 16,
+                marginBottom: 14,
+                elevation: 3,
               }}
             >
+              {/* Title + Amount */}
               <View
                 style={{
-                  backgroundColor: categoryColors[expense.category],
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
-                  borderRadius: 8,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                  {expense.category}
+                <Text style={{ fontSize: 16, fontWeight: "600" }}>
+                  {expense.title}
+                </Text>
+                <Text
+                  style={{ fontSize: 16, fontWeight: "700", color: "#2e7d32" }}
+                >
+                  ₹{expense.amount.toFixed(2)}
                 </Text>
               </View>
 
-              <Text style={{ fontSize: 12, color: "#777" }}>
-                {expense.date}
-              </Text>
-            </View>
-          </View>
-        ))}
+              {/* Category + Date */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: 8,
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: categoryColors[expense.category],
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    borderRadius: 8,
+                  }}
+                >
+                  <Text style={{ fontSize: 12, fontWeight: "600" }}>
+                    {expense.category}
+                  </Text>
+                </View>
+
+                <Text style={{ fontSize: 12, color: "#777" }}>
+                  {new Date(expense.date).toLocaleDateString()}
+                </Text>
+              </View>
+
+              {/* ⭐ Reimbursable Badge */}
+              {expense.reimbursable && (
+                <View
+                  style={{
+                    marginTop: 8,
+                    alignSelf: "flex-start",
+                    backgroundColor: expense.reimbursed
+                      ? "#9ce29eff"
+                      : "#6298bfff",
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    borderRadius: 8,
+                  }}
+                >
+                  <Text style={{ fontSize: 12, fontWeight: "600" }}>
+                    {expense.reimbursed ? "Reimbursed" : "💼 Reimbursable"}
+                  </Text>
+                </View>
+              )}
+
+              {/* ⭐ Expanded Action */}
+              {isExpanded && !expense.reimbursed && (
+                <TouchableOpacity
+                  onPress={() => markReimbursed(expense.id)}
+                  style={{
+                    marginTop: 14,
+                    backgroundColor: "#1C2826",
+                    paddingVertical: 10,
+                    borderRadius: 10,
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "700" }}>
+                    Mark as Reimbursed
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </View>
   );
